@@ -1,4 +1,5 @@
 $vmSize = "Standard_B2pts_v2"
+
 $dataFolder = "data"
 
 $jsonFiles = Get-ChildItem -Path $dataFolder -Filter *.json
