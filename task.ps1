@@ -1,22 +1,19 @@
-$vmSize = "Standard_B2pts_v2"
+$dataFiles = Get-ChildItem -Path "./data" -Filter "*.json"
 
-$dataFolder = "data"
+$regionsWithVM = @()
 
-$jsonFiles = Get-ChildItem -Path $dataFolder -Filter *.json
+$targetVMSize = "Standard_B2pts_v2"
 
-$regions = @()
+foreach ($file in $dataFiles) {
+    $jsonContent = Get-Content -Path $file.FullName -Raw | ConvertFrom-Json
 
-foreach($file in $jsonFiles){
-  $filePath = $file.FullName
-
-  $vmParameters = Get-content $filePath | ConvertFrom-Json
-
-  $found = $vmParameters | Where-Object {$_.name -eq $vmSize}
-
-  if ($found) {
-    $region = $file.BaseName
-    $regions += $region
-  }
+    foreach ($vmSize in $jsonContent) {
+        if ($vmSize.name -eq $targetVMSize) {
+            $regionName = $file.BaseName
+            $regionsWithVM += $regionName
+            break
+        }
+    }
 }
 
-$regions | ConvertTo-Json | Set-Content -Path "result.json"
+$regionsWithVM | ConvertTo-Json | Set-Content -Path "./result.json"
